@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Tao.OpenGl;
 using Tao.Platform.Windows;
 using Tao.FreeGlut;
@@ -11,35 +8,34 @@ namespace Аудиоплеер_2.Classes
 {
     public class GraphicsFFT
     {
-        SimpleOpenGlControl OGL;
-        int fft_lenght = 4096;
-        public float[] fft;
+        private SimpleOpenGlControl ogl;
+        private int fft_lenght = 4096;
+        public float[] FFT;
         public Settings Set = new Settings();
 
-
-        float Sdelta = 0.1f;
-        int Slen;
+        private float sDelta = 0.1f;
+        private int sLen;
 
         //координаты
-        float[] Svector;
+        private float[] sVector;
         //цвет точек
-        float[] Scolor;
+        private float[] sColor;
         //цветовые каналы
-        float[] rgba;
+        private float[] rgba;
         //точка зрения
-        double X1 = 0, Y1 = 0, Z1 = 0;
+        private double x1 = 0, y1 = 0, z1 = 0;
 
         public GraphicsFFT(SimpleOpenGlControl form)
         {
-            OGL = form;
+            ogl = form;
             Glut.glutInit();
             Glut.glutInitDisplayMode(Glut.GLUT_RGBA | Glut.GLUT_DEPTH | Glut.GLUT_DOUBLE);
-            fft = new float[fft_lenght];
+            FFT = new float[fft_lenght];
 
-            Slen = (int)((float)Math.PI / Sdelta + 0.5) * (int)(2 * (float)Math.PI / Sdelta + 0.5) * 3;
-            Svector = new float[Slen + 1];
+            sLen = (int)((float)Math.PI / sDelta + 0.5) * (int)(2 * (float)Math.PI / sDelta + 0.5) * 3;
+            sVector = new float[sLen + 1];
             //цвет точек
-            Scolor = new float[Slen / 3 * 4];
+            sColor = new float[sLen / 3 * 4];
             //цветовые каналы
             rgba = new float[4];
         }
@@ -47,16 +43,16 @@ namespace Аудиоплеер_2.Classes
         public void Init_OGL()
         {
             Gl.glClearColor(0f, 0f, 0f, 1);
-            Gl.glViewport(0, 0, OGL.Width, OGL.Height);
+            Gl.glViewport(0, 0, ogl.Width, ogl.Height);
             Gl.glMatrixMode(Gl.GL_PROJECTION);
             Gl.glLoadIdentity();
 
             Glu.gluPerspective(45, 1, 0.1, 500.0);
             Gl.glOrtho(
-                -OGL.Width / 2.0, 
-                OGL.Width / 2.0, 
-                -OGL.Height / 2.0, 
-                OGL.Height / 2.0, 
+                -ogl.Width / 2.0, 
+                ogl.Width / 2.0, 
+                -ogl.Height / 2.0, 
+                ogl.Height / 2.0, 
                 0.1, 
                 fft_lenght);
 
@@ -68,98 +64,98 @@ namespace Аудиоплеер_2.Classes
             Gl.glHint(Gl.GL_POLYGON_SMOOTH_HINT, Gl.GL_NICEST);
         }
 
-        public void drawOGL_Sphere()
+        public void DrawOGL_Sphere()
         {
-            if (fft != null)
+            if (FFT != null)
             {
                 Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
                 Gl.glLoadIdentity();
-                Camera();
+                camera();
                 Gl.glColor3d(1, 1, 1);
 
-                int Sid = 0, Sc = 0, idf = 0;
-                float SanglF = 0, SanglT = 0; 
+                int sId = 0, sC = 0, idf = 0;
+                float sAnglF = 0, sAnglT = 0; 
 
-                while (SanglT <= Math.PI)
+                while (sAnglT <= Math.PI)
                 {
-                    SanglF = 0;
-                    while (SanglF <= 2 * Math.PI)
+                    sAnglF = 0;
+                    while (sAnglF <= 2 * Math.PI)
                     {
-                        if (Sid == 0)
+                        if (sId == 0)
                         {
-                            Svector[Sid] = 0;
-                            Svector[Sid + 1] = 0;
-                            Svector[Sid + 2] = 0;
+                            sVector[sId] = 0;
+                            sVector[sId + 1] = 0;
+                            sVector[sId + 2] = 0;
                         }
                         else
                         {
-                            Svector[Sid] = (fft[idf] * Set.msize * 10 + 1.0f) * Set.Sr 
-                                * (float)Math.Sin(Set.alfa * SanglT) 
-                                * (float)Math.Cos(Set.beta * SanglF);
+                            sVector[sId] = (FFT[idf] * Set.Msize * 10 + 1.0f) * Set.Sr 
+                                * (float)Math.Sin(Set.Alfa * sAnglT) 
+                                * (float)Math.Cos(Set.Beta * sAnglF);
 
-                            Svector[Sid + 1] = (fft[idf] * Set.msize * 10 + 1.0f) * Set.Sr 
-                                * (float)Math.Sin(Set.gamma * SanglT) 
-                                * (float)Math.Sin(Set.delta * SanglF);
+                            sVector[sId + 1] = (FFT[idf] * Set.Msize * 10 + 1.0f) * Set.Sr 
+                                * (float)Math.Sin(Set.Gamma * sAnglT) 
+                                * (float)Math.Sin(Set.Delta * sAnglF);
 
-                            Svector[Sid + 2] = (fft[idf] * Set.msize * 10 + 1.0f) * Set.Sr 
-                                * (float)Math.Cos(Set.eps * SanglT);
+                            sVector[sId + 2] = (FFT[idf] * Set.Msize * 10 + 1.0f) * Set.Sr 
+                                * (float)Math.Cos(Set.Eps * sAnglT);
                         }   
-                        if (Set.user == Color.Empty)
+                        if (Set.User == Color.Empty)
                         {
-                            rgba = Color_fft(rgba, fft[idf] * 1000, Set.csize);
+                            rgba = getColor_fft(rgba, FFT[idf] * 1000, Set.Csize);
                         }
                         else
                         {
-                            rgba = Color_fft_user(rgba, fft[idf], Set.user);
+                            rgba = getColor_fft_user(rgba, FFT[idf], Set.User);
                         }
-                        Scolor[Sc] = rgba[0];
-                        Scolor[Sc + 1] = rgba[1];
-                        Scolor[Sc + 2] = rgba[2];
-                        Scolor[Sc + 3] = rgba[3];
+                        sColor[sC] = rgba[0];
+                        sColor[sC + 1] = rgba[1];
+                        sColor[sC + 2] = rgba[2];
+                        sColor[sC + 3] = rgba[3];
 
-                        Sc += 4;
-                        Sid += 3;
-                        SanglF += Sdelta;
+                        sC += 4;
+                        sId += 3;
+                        sAnglF += sDelta;
                         idf++;
                         if (idf >= fft_lenght) idf = 0;
 
                     }
-                    if (Sid + 3 >= Slen) break;
-                    SanglT += Sdelta;
+                    if (sId + 3 >= sLen) break;
+                    sAnglT += sDelta;
                 }
 
 
                 Gl.glEnableClientState(Gl.GL_COLOR_ARRAY);
                 Gl.glEnableClientState(Gl.GL_VERTEX_ARRAY);
 
-                Gl.glColorPointer(4, Gl.GL_FLOAT, 0, Scolor);
-                Gl.glVertexPointer(3, Gl.GL_FLOAT, 0, Svector);
+                Gl.glColorPointer(4, Gl.GL_FLOAT, 0, sColor);
+                Gl.glVertexPointer(3, Gl.GL_FLOAT, 0, sVector);
                 
                 switch (Set.ODA)
                 {
                     case 0:
                         {
-                            Gl.glDrawArrays(Gl.GL_QUADS, 0, Slen / 3);
+                            Gl.glDrawArrays(Gl.GL_QUADS, 0, sLen / 3);
                             break;
                         }
                     case 1:
                         {
-                            Gl.glDrawArrays(Gl.GL_TRIANGLES, 0, Slen / 3);
+                            Gl.glDrawArrays(Gl.GL_TRIANGLES, 0, sLen / 3);
                             break;
                         }
                     case 2:
                         {
-                            Gl.glDrawArrays(Gl.GL_TRIANGLE_STRIP, 0, Slen / 3);
+                            Gl.glDrawArrays(Gl.GL_TRIANGLE_STRIP, 0, sLen / 3);
                             break;
                         }
                     case 3:
                         {
-                            Gl.glDrawArrays(Gl.GL_TRIANGLE_FAN, 0, Slen / 3);
+                            Gl.glDrawArrays(Gl.GL_TRIANGLE_FAN, 0, sLen / 3);
                             break;
                         }
                     case 4:
                         {
-                            Gl.glDrawArrays(Gl.GL_LINE_STRIP, 0, Slen / 3);
+                            Gl.glDrawArrays(Gl.GL_LINE_STRIP, 0, sLen / 3);
                             break;
                         }
                 }
@@ -167,12 +163,12 @@ namespace Аудиоплеер_2.Classes
                 Gl.glDisableClientState(Gl.GL_COLOR_ARRAY);
                 Gl.glFlush();
 
-                OGL.Invoke(new Action(()=> OGL.Invalidate()));
+                ogl.Invoke(new Action(()=> ogl.Invalidate()));
             }
         }
         
 
-        private float[] Color_fft(float []RGBA, float ampl, int c)
+        private float[] getColor_fft(float []RGBA, float ampl, int c)
         {
             RGBA[3] = 1;
             switch (c)
@@ -291,7 +287,7 @@ namespace Аудиоплеер_2.Classes
             return RGBA;
         }
 
-        private float[] Color_fft_user(float[] RGBA, float ampl, Color c)
+        private float[] getColor_fft_user(float[] RGBA, float ampl, Color c)
         {
             RGBA[0] = c.R * ampl;
             RGBA[1] = c.G * ampl;
@@ -300,40 +296,40 @@ namespace Аудиоплеер_2.Classes
             return RGBA;
         }
 
-        private double[] R_D(double r, double t, double f)
+        private double[] r_d(double r, double t, double f)
         {
             double x, y, z;
             x = r * Math.Sin(t / 180 * Math.PI) * Math.Cos(f / 180 * Math.PI);
             y = r * Math.Sin(t / 180 * Math.PI) * Math.Sin(f / 180 * Math.PI);
             z = r * Math.Cos(t / 180 * Math.PI);
-            double[] B = new double[3];
-            B[0] = x;
-            B[1] = y;
-            B[2] = z;
-            return B;
+            double[] b = new double[3];
+            b[0] = x;
+            b[1] = y;
+            b[2] = z;
+            return b;
         }
 
-        private double[] D_R(double x, double y, double z)
+        private double[] d_r(double x, double y, double z)
         {
             double r, t, f;
             r = Math.Sqrt(x * x + y * y + z * z);
             t = Math.Atan(Math.Sqrt(x * x + y * y) / z);
             f = Math.Atan(y / x);
-            double[] A = new double[3];
-            A[0] = r;
-            A[1] = t;
-            A[2] = f;
-            return A;
+            double[] a = new double[3];
+            a[0] = r;
+            a[1] = t;
+            a[2] = f;
+            return a;
 
         }
 
-        private void Camera()
+        private void camera()
         {
-            double[] w = R_D(Set.r, Set.tet, Set.fi);
-            X1 = w[0];
-            Y1 = w[1];
-            Z1 = w[2];
-            Glu.gluLookAt(X1, Y1, Z1, 0, 0, 0, 0, 1, 0);
+            double[] w = r_d(Set.R, Set.Tet, Set.Fi);
+            x1 = w[0];
+            y1 = w[1];
+            z1 = w[2];
+            Glu.gluLookAt(x1, y1, z1, 0, 0, 0, 0, 1, 0);
         }
     }
 }

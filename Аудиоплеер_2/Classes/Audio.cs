@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Un4seen.Bass;
 using System.Windows.Forms;
 
@@ -9,16 +6,16 @@ namespace Аудиоплеер_2.Classes
 {
     public class Audio
     {
-        public bool cycle = false;
+        public bool Cycle = false;
         public event EventHandler End;
         public event EventHandler Begin;
-        int _stream;
-        string[] _FileName;
-        string[] _FilePath;
-        string[] _time;
-        int _number = 0;
+        private int _stream;
+        private string[] fileName;
+        private string[] filePath;
+        private string[] time;
+        private int _number = 0;
         //для события конца песни
-        SYNCPROC _sEndMus;
+        private SYNCPROC _sEndMus;
 
 
         public Audio()
@@ -36,7 +33,6 @@ namespace Аудиоплеер_2.Classes
 
         public void SetLen(double len){
             Bass.BASS_ChannelSetPosition(_stream, len);
-
         }
 
         public double LenNow()
@@ -55,19 +51,19 @@ namespace Аудиоплеер_2.Classes
             return len;
         }
 
-        public void MemberFile(string []Name, string[]Path)
+        public void SaveTimeAndNameFile(string []name, string[]path)
         {
-            _FileName = new string[Name.Length];
-            _FilePath = new string[Name.Length];
-            _time = new string[Name.Length];
+            fileName = new string[name.Length];
+            filePath = new string[name.Length];
+            time = new string[name.Length];
             int bufstream = 0;
             double lengFile = 0;
-            for (int i = 0; i < Name.Length; i++)
+            for (int i = 0; i < name.Length; i++)
             {
-                _FileName[i] = Name[i];
-                _FilePath[i] = Path[i];
+                fileName[i] = name[i];
+                filePath[i] = path[i];
                 bufstream = Bass.BASS_StreamCreateFile(
-                    _FilePath[i],
+                    filePath[i],
                     0,
                     0,
                     BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_PRESCAN
@@ -75,11 +71,10 @@ namespace Аудиоплеер_2.Classes
                 lengFile = Bass.BASS_ChannelBytes2Seconds(
                     bufstream,
                     Bass.BASS_ChannelGetLength(bufstream));
-                _time[i] = Long(lengFile);
+                time[i] = Long(lengFile);
                 Bass.BASS_StreamFree(bufstream);
             }
         }
-
 
         private string Long(double count)
         {
@@ -110,7 +105,7 @@ namespace Аудиоплеер_2.Classes
                 Bass.BASS_StreamFree(_stream);
             }
             _stream = Bass.BASS_StreamCreateFile(
-                _FilePath[number], 
+                filePath[number], 
                 0, 
                 0,
                 BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_PRESCAN);
@@ -126,13 +121,13 @@ namespace Аудиоплеер_2.Classes
         {
             if (End != null) End(this, new EventArgs());
             _number++;
-            if (_number >= _FileName.Length)
+            if (_number >= fileName.Length)
             {
                 _number = 0;
             }
             CreateStream(_number);
 
-            if (_number == 0 && !cycle) return;
+            if (_number == 0 && !Cycle) return;
 
             Play();
         }
@@ -154,22 +149,22 @@ namespace Аудиоплеер_2.Classes
 
         public string[] GetShortFileName()
         {
-            if (_FileName != null) return _FileName;
+            if (fileName != null) return fileName;
             else return null;
 
         }
 
         public string[] GetShortFileTime()
         {
-            if (_time != null) return _time;
+            if (time != null) return time;
             else return null;
 
         }
 
         public void SetNumber(int delta){
             _number += delta;
-            if (_number >= _FileName.Length) _number = 0;
-            if (_number < 0) _number = _FileName.Length - 1;
+            if (_number >= fileName.Length) _number = 0;
+            if (_number < 0) _number = fileName.Length - 1;
         }
 
         public int GetNumber()

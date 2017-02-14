@@ -40,8 +40,8 @@
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Name = "ButtonOption";
             this.Size = new System.Drawing.Size(215, 57);
-            this.Load += new System.EventHandler(this.ButtonOption_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.ButtonOption_Paint);
+            this.Load += new System.EventHandler(this.buttonOption_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.buttonOption_Paint);
             this.ResumeLayout(false);
 
         }

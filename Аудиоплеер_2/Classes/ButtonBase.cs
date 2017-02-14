@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using Аудиоплеер_2.Interface;
@@ -10,14 +7,14 @@ namespace Аудиоплеер_2.Classes
 {
     public class ButtonBase
     {
-        Point _location;
-        int _width;
-        int _height;
-        Image _background, _move, _click;
-        IButtonParent _parent;
-        bool _enterMouse = false;
-        public bool work = true;
-        public bool clickyou = false;
+        private Point location;
+        private int width;
+        private int height;
+        private Image backgroundImage, moveImage, clickImage;
+        private IButtonParent parent;
+        private bool enterMouse = false;
+        public bool Work = true;
+        public bool ClickYou = false;
         public event EventHandler Click;
 
 
@@ -27,76 +24,77 @@ namespace Аудиоплеер_2.Classes
             parent.MouseMove += new MouseEventHandler(parent_MouseMove);
             parent.MouseClick += new MouseEventHandler(parent_MouseClick);
             parent.MouseLeave += new EventHandler(parent_MouseLeave);
-            _location = location;
-            _width = width;
-            _height = height;
-            _background = background;
-            _move = move;
-            _click = click;
-            _parent = parent;
+            this.location = location;
+            this.width = width;
+            this.height = height;
+            this.backgroundImage = background;
+            this.moveImage = move;
+            this.clickImage = click;
+            this.parent = parent;
         }
 
-        void parent_MouseLeave(object sender, EventArgs e)
+        private void parent_MouseLeave(object sender, EventArgs e)
         {
-            _enterMouse = false;
-            _parent.Invalidate(new Rectangle(_location.X, _location.Y, _width, _height));
+            enterMouse = false;
+            parent.Invalidate(new Rectangle(location.X, location.Y, width, height));
         }
 
-        void parent_MouseClick(object sender, MouseEventArgs e)
+        private void parent_MouseClick(object sender, MouseEventArgs e)
         {
-            if (work)
+            if (Work)
             {
-                if (Click != null && _enterMouse) Click(this, new EventArgs());
+                if (Click != null && enterMouse) Click(this, new EventArgs());
             }
         }
 
-        void parent_MouseMove(object sender, MouseEventArgs e)
+        private void parent_MouseMove(object sender, MouseEventArgs e)
         {
-            if (work)
+            if (Work)
             {
-                int x1 = _location.X;
-                int x2 = x1 + _width;
-                int y1 = _location.Y;
-                int y2 = y1 + _height;
+                int x1 = location.X;
+                int x2 = x1 + width;
+                int y1 = location.Y;
+                int y2 = y1 + height;
 
                 if ((e.Location.X >= x1 && e.Location.X <= x2) && (e.Location.Y >= y1 && e.Location.Y <= y2))
                 {
-                    if (!_enterMouse) _enterMouse = true;
+                    if (!enterMouse) enterMouse = true;
                     else return;
                 }
                 else
                 {
-                    if (_enterMouse) _enterMouse = false;
+                    if (enterMouse) enterMouse = false;
                     else return;
                 }
-                _parent.Invalidate(new Rectangle(x1, y1, _width, _height));
+                parent.Invalidate(new Rectangle(x1, y1, width, height));
             }
         }
 
-        void parent_Paint(object sender, PaintEventArgs e)
+        private void parent_Paint(object sender, PaintEventArgs e)
         {
-            if (work)
+            if (Work)
             {
-                if (clickyou)
+                if (ClickYou)
                 {
-                    e.Graphics.DrawImage(_click, _location.X, _location.Y, _width, _height);
+                    e.Graphics.DrawImage(clickImage, location.X, location.Y, width, height);
                 }
                 else
                 {
-                    if (_enterMouse)
-                        e.Graphics.DrawImage(_move, _location.X, _location.Y, _width, _height);
+                    if (enterMouse)
+                        e.Graphics.DrawImage(moveImage, location.X, location.Y, width, height);
                     else
-                        e.Graphics.DrawImage(_background, _location.X, _location.Y, _width, _height);
+                        e.Graphics.DrawImage(backgroundImage, location.X, location.Y, width, height);
                 }
             }
         }
-        public void parent_Size(int X, int Y)
+
+        public void parent_Size(int x, int y)
         {
-            if (work)
+            if (Work)
             {
-                _location.X = X;
-                _location.Y = Y;
-                _parent.Invalidate();
+                location.X = x;
+                location.Y = y;
+                parent.Invalidate();
             }
         }
     }

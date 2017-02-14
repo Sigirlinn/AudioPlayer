@@ -893,8 +893,8 @@
             this.Name = "Option";
             this.ShowInTaskbar = false;
             this.Text = "Option";
-            this.Load += new System.EventHandler(this.Option_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Option_FormClosing);
+            this.Load += new System.EventHandler(this.option_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.option_FormClosing);
             this.Controls.SetChildIndex(this.panel1, 0);
             this.Controls.SetChildIndex(this.panel2, 0);
             this.Controls.SetChildIndex(this.panel4, 0);

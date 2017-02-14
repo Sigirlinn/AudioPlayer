@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Аудиоплеер_2.Interface;
 using Аудиоплеер_2.Controls;
@@ -15,54 +10,53 @@ namespace Аудиоплеер_2.Forms
 {
     public partial class Option : BaseWindow, IButtonParent
     {
-        public struct settings_file
+        public bool DemoClick = false;
+        public int Number = 0;
+        private Settings_file[] sf;
+        private MainBottomPanel bParent;
+        private Settings set;
+        private Settings buf;
+
+        public struct Settings_file
         {
-            public string name;
-            public int a, b, g, d, e, m, s, oda;
-            public Color csize;
+            public string Name;
+            public int A, B, G, D, E, M, S, Oda;
+            public Color Csize;
             
         }
-        public bool DemoClick = false;
-        public int number = 0;
-        settings_file []SF;
-        MainBottomPanel _parent;
-        Settings set;
-        Settings buf;
-              
-
 
         public Option(MainBottomPanel parent)
         {
             InitializeComponent();
             topPanel1.OffMax();
             topPanel1.OffMin();
-            buttonOption1.text = "Задать цвет";
-            buttonOption2.text = "Расположение камеры";
-            buttonOption3.text = "Параметры визуализации";
-            buttonOption4.text = "Выбрать форму";
-            buttonOption5.text = "Камера 5";
-            buttonOption6.text = "Отмена"; 
-            buttonOption7.text = "Сохранить";
-            buttonOption8.text = "Сброс";
-            buttonOption9.text = "Выбрать цвет из палитры";
-            buttonOption10.text = "Камера 1";
-            buttonOption11.text = "Камера 2";
-            buttonOption13.text = "Камера 3";
-            buttonOption14.text = "Камера 4";
-            buttonOption12.text = "Сохранить";
-            buttonOption15.text = "DEmo";
-            _parent = parent;
-            open();
+            buttonOption1.Label = "Задать цвет";
+            buttonOption2.Label = "Расположение камеры";
+            buttonOption3.Label = "Параметры визуализации";
+            buttonOption4.Label = "Выбрать форму";
+            buttonOption5.Label = "Камера 5";
+            buttonOption6.Label = "Отмена"; 
+            buttonOption7.Label = "Сохранить";
+            buttonOption8.Label = "Сброс";
+            buttonOption9.Label = "Выбрать цвет из палитры";
+            buttonOption10.Label = "Камера 1";
+            buttonOption11.Label = "Камера 2";
+            buttonOption13.Label = "Камера 3";
+            buttonOption14.Label = "Камера 4";
+            buttonOption12.Label = "Сохранить";
+            buttonOption15.Label = "DEmo";
+            bParent = parent;
+            Open();
             
             
         }
 
-        public void open()
+        public void Open()
         {
             StreamReader sr;
             try
             {
-                sr = new StreamReader(Application.StartupPath + "/settings.ini");
+                sr = new StreamReader(Application.StartupPath.ToString() + "\\Settings.ini");
             }
             catch{
                 MessageBox.Show("Не удалось открыть файл настроек 'Settings.ini'.");
@@ -72,27 +66,27 @@ namespace Аудиоплеер_2.Forms
             {
                 string buf = sr.ReadToEnd();
                 string[] line = buf.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                SF = new settings_file[line.Length];
+                sf = new Settings_file[line.Length];
                 for (int i = 0; i < line.Length; i++)
                 {
-                    SF[i] = new settings_file();
+                    sf[i] = new Settings_file();
                     string[] s = line[i].Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    SF[i].name = s[0];
-                    SF[i].a = Convert.ToInt32(s[1]);
-                    SF[i].b = Convert.ToInt32(s[2]);
-                    SF[i].g = Convert.ToInt32(s[3]);
-                    SF[i].d = Convert.ToInt32(s[4]);
-                    SF[i].e = Convert.ToInt32(s[5]);
-                    SF[i].m = Convert.ToInt32(s[6]);
-                    SF[i].s = Convert.ToInt32(s[7]);
-                    SF[i].oda = Convert.ToInt32(s[8]);
-                    SF[i].csize = Color.FromArgb(Convert.ToInt32(s[9]));
+                    sf[i].Name = s[0];
+                    sf[i].A = Convert.ToInt32(s[1]);
+                    sf[i].B = Convert.ToInt32(s[2]);
+                    sf[i].G = Convert.ToInt32(s[3]);
+                    sf[i].D = Convert.ToInt32(s[4]);
+                    sf[i].E = Convert.ToInt32(s[5]);
+                    sf[i].M = Convert.ToInt32(s[6]);
+                    sf[i].S = Convert.ToInt32(s[7]);
+                    sf[i].Oda = Convert.ToInt32(s[8]);
+                    sf[i].Csize = Color.FromArgb(Convert.ToInt32(s[9]));
                 }
                 sr.Dispose();
                 sr.Close();
-                for (int i = 0; i < SF.Length; i++)
+                for (int i = 0; i < sf.Length; i++)
                 {
-                    comboBox1.Items.Add(SF[i].name);
+                    comboBox1.Items.Add(sf[i].Name);
                 }
             }
             catch{
@@ -101,7 +95,7 @@ namespace Аудиоплеер_2.Forms
             }
         }
 
-        private void Option_FormClosing(object sender, FormClosingEventArgs e)
+        private void option_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
             this.Hide();   
@@ -149,7 +143,7 @@ namespace Аудиоплеер_2.Forms
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                set.user = colorDialog1.Color;
+                set.User = colorDialog1.Color;
                 radioButton1.Checked = false;
                 radioButton2.Checked = false;
                 radioButton3.Checked = false;
@@ -164,20 +158,20 @@ namespace Аудиоплеер_2.Forms
 
         private void radioButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton1.Checked) { set.csize = 0; set.user = Color.Empty; }
-            if (radioButton2.Checked) { set.csize = 1; set.user = Color.Empty; }
-            if (radioButton3.Checked) { set.csize = 2; set.user = Color.Empty; }
-            if (radioButton4.Checked) { set.csize = 3; set.user = Color.Empty; }
-            if (radioButton5.Checked) { set.csize = 4; set.user = Color.Empty; }
-            if (radioButton6.Checked) { set.csize = 5; set.user = Color.Empty; }
-            if (radioButton7.Checked) { set.csize = 6; set.user = Color.Empty; }
-            if (radioButton8.Checked) { set.csize = 7; set.user = Color.Empty; }
-            if (radioButton9.Checked) { set.csize = 8; set.user = Color.Empty; }
+            if (radioButton1.Checked) { set.Csize = 0; set.User = Color.Empty; }
+            if (radioButton2.Checked) { set.Csize = 1; set.User = Color.Empty; }
+            if (radioButton3.Checked) { set.Csize = 2; set.User = Color.Empty; }
+            if (radioButton4.Checked) { set.Csize = 3; set.User = Color.Empty; }
+            if (radioButton5.Checked) { set.Csize = 4; set.User = Color.Empty; }
+            if (radioButton6.Checked) { set.Csize = 5; set.User = Color.Empty; }
+            if (radioButton7.Checked) { set.Csize = 6; set.User = Color.Empty; }
+            if (radioButton8.Checked) { set.Csize = 7; set.User = Color.Empty; }
+            if (radioButton9.Checked) { set.Csize = 8; set.User = Color.Empty; }
         }
 
-        private void Option_Load(object sender, EventArgs e)
+        private void option_Load(object sender, EventArgs e)
         {
-            set = _parent.display.Set;
+            set = bParent.Display.Set;
             buf = new Settings();
         }
 
@@ -188,12 +182,12 @@ namespace Аудиоплеер_2.Forms
 
         private void synchronous()
         {
-            numericUpDown1.Value = (decimal)set.alfa;
-            numericUpDown2.Value = (decimal)set.beta;
-            numericUpDown3.Value = (decimal)set.gamma;
-            numericUpDown4.Value = (decimal)set.delta;
-            numericUpDown5.Value = (decimal)set.eps;
-            numericUpDown6.Value = (decimal)set.msize;
+            numericUpDown1.Value = (decimal)set.Alfa;
+            numericUpDown2.Value = (decimal)set.Beta;
+            numericUpDown3.Value = (decimal)set.Gamma;
+            numericUpDown4.Value = (decimal)set.Delta;
+            numericUpDown5.Value = (decimal)set.Eps;
+            numericUpDown6.Value = (decimal)set.Msize;
             numericUpDown7.Value = (decimal)set.Sr;
             switch (set.ODA)
             {
@@ -207,27 +201,27 @@ namespace Аудиоплеер_2.Forms
 
         private void numericUpDown5_ValueChanged(object sender, EventArgs e)
         {
-            set.eps = (float)numericUpDown5.Value;
+            set.Eps = (float)numericUpDown5.Value;
         }
 
         private void numericUpDown4_ValueChanged(object sender, EventArgs e)
         {
-            set.delta = (float)numericUpDown4.Value;
+            set.Delta = (float)numericUpDown4.Value;
         }
 
         private void numericUpDown3_ValueChanged(object sender, EventArgs e)
         {
-            set.gamma = (float)numericUpDown3.Value;
+            set.Gamma = (float)numericUpDown3.Value;
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            set.beta = (float)numericUpDown2.Value;
+            set.Beta = (float)numericUpDown2.Value;
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            set.alfa = (float)numericUpDown1.Value;
+            set.Alfa = (float)numericUpDown1.Value;
         }
 
         private void buttonOption6_Click(object sender, EventArgs e)
@@ -260,7 +254,7 @@ namespace Аудиоплеер_2.Forms
 
         private void numericUpDown6_ValueChanged(object sender, EventArgs e)
         {
-            set.msize = (int)numericUpDown6.Value;
+            set.Msize = (int)numericUpDown6.Value;
         }
 
         private void numericUpDown7_ValueChanged(object sender, EventArgs e)
@@ -301,95 +295,95 @@ namespace Аудиоплеер_2.Forms
 
         public void Next()
         {
-            set.alfa = SF[number].a;
-            set.beta = SF[number].b;
-            set.gamma = SF[number].g;
-            set.delta = SF[number].d;
-            set.eps = SF[number].e;
-            set.msize = SF[number].m;
-            set.Sr = SF[number].s;
-            set.ODA = SF[number].oda;
-            set.user = SF[number].csize;
+            set.Alfa = sf[Number].A;
+            set.Beta = sf[Number].B;
+            set.Gamma = sf[Number].G;
+            set.Delta = sf[Number].D;
+            set.Eps = sf[Number].E;
+            set.Msize = sf[Number].M;
+            set.Sr = sf[Number].S;
+            set.ODA = sf[Number].Oda;
+            set.User = sf[Number].Csize;
             //synchronous();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < SF.Length; i++)
+            for (int i = 0; i < sf.Length; i++)
             {
-                if (comboBox1.Text == SF[i].name)
+                if (comboBox1.Text == sf[i].Name)
                 {
-                    set.alfa = SF[i].a;
-                    set.beta = SF[i].b;
-                    set.gamma = SF[i].g;
-                    set.delta = SF[i].d;
-                    set.eps = SF[i].e;
-                    set.msize = SF[i].m;
-                    set.Sr = SF[i].s;
-                    set.ODA = SF[i].oda;
-                    set.user = SF[i].csize;
+                    set.Alfa = sf[i].A;
+                    set.Beta = sf[i].B;
+                    set.Gamma = sf[i].G;
+                    set.Delta = sf[i].D;
+                    set.Eps = sf[i].E;
+                    set.Msize = sf[i].M;
+                    set.Sr = sf[i].S;
+                    set.ODA = sf[i].Oda;
+                    set.User = sf[i].Csize;
                     synchronous();
-                    number = i;
+                    Number = i;
                 }
             }
         }
 
         private void buttonOption12_Click(object sender, EventArgs e)
         {
-            SF = add(textBox1.Text);
+            sf = AddSettings(textBox1.Text);
             comboBox1.Items.Add(textBox1.Text);
-            write();
+            Write();
             textBox1.Clear();
         }
 
-        public settings_file[] add(string name)
+        public Settings_file[] AddSettings(string name)
         {
-            settings_file[] buf = new settings_file[SF.Length + 1];
+            Settings_file[] buf = new Settings_file[sf.Length + 1];
             int i;
-            for (i = 0; i < SF.Length; i++)
+            for (i = 0; i < sf.Length; i++)
             {
-                buf[i] = new settings_file();
-                buf[i].a = SF[i].a;
-                buf[i].b = SF[i].b;
-                buf[i].g = SF[i].g;
-                buf[i].d = SF[i].d;
-                buf[i].e = SF[i].e;
-                buf[i].m = SF[i].m;
-                buf[i].s = SF[i].s;
-                buf[i].oda = SF[i].oda;
-                buf[i].name = SF[i].name;
-                buf[i].csize = SF[i].csize;
+                buf[i] = new Settings_file();
+                buf[i].A = sf[i].A;
+                buf[i].B = sf[i].B;
+                buf[i].G = sf[i].G;
+                buf[i].D = sf[i].D;
+                buf[i].E = sf[i].E;
+                buf[i].M = sf[i].M;
+                buf[i].S = sf[i].S;
+                buf[i].Oda = sf[i].Oda;
+                buf[i].Name = sf[i].Name;
+                buf[i].Csize = sf[i].Csize;
 
             }
-            buf[i] = new settings_file();
-            buf[i].a = (int)set.alfa;
-            buf[i].b = (int)set.beta;
-            buf[i].g = (int)set.gamma;
-            buf[i].d = (int)set.delta;
-            buf[i].e = (int)set.eps;
-            buf[i].m = set.msize;
-            buf[i].s = (int)set.Sr;
-            buf[i].oda = set.ODA;
-            buf[i].name = name;
-            buf[i].csize = set.user;
+            buf[i] = new Settings_file();
+            buf[i].A = (int)set.Alfa;
+            buf[i].B = (int)set.Beta;
+            buf[i].G = (int)set.Gamma;
+            buf[i].D = (int)set.Delta;
+            buf[i].E = (int)set.Eps;
+            buf[i].M = set.Msize;
+            buf[i].S = (int)set.Sr;
+            buf[i].Oda = set.ODA;
+            buf[i].Name = name;
+            buf[i].Csize = set.User;
             return buf;
         }
 
-        public void write()
+        public void Write()
         {
             StreamWriter sw = new StreamWriter(Application.StartupPath + "/settings.ini",false);
-            for (int i = 0; i < SF.Length; i++)
+            for (int i = 0; i < sf.Length; i++)
             {
-                sw.WriteLine(SF[i].name + " " +
-                    SF[i].a.ToString() + " " +
-                    SF[i].b.ToString() + " " +
-                    SF[i].g.ToString() + " " +
-                    SF[i].d.ToString() + " " +
-                    SF[i].e.ToString() + " " +
-                    SF[i].m.ToString() + " " +
-                    SF[i].s.ToString() + " " +
-                    SF[i].oda.ToString() + " " +
-                    SF[i].csize.ToArgb());
+                sw.WriteLine(sf[i].Name + " " +
+                    sf[i].A.ToString() + " " +
+                    sf[i].B.ToString() + " " +
+                    sf[i].G.ToString() + " " +
+                    sf[i].D.ToString() + " " +
+                    sf[i].E.ToString() + " " +
+                    sf[i].M.ToString() + " " +
+                    sf[i].S.ToString() + " " +
+                    sf[i].Oda.ToString() + " " +
+                    sf[i].Csize.ToArgb());
             }
             sw.Close();
         }

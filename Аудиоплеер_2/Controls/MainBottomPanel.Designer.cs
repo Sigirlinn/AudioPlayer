@@ -46,8 +46,8 @@
             this.DoubleBuffered = true;
             this.Name = "MainBottomPanel";
             this.Size = new System.Drawing.Size(150, 30);
-            this.Load += new System.EventHandler(this.MainBottomPanel_Load);
-            this.SizeChanged += new System.EventHandler(this.MainBottomPanel_SizeChanged);
+            this.Load += new System.EventHandler(this.mainBottomPanel_Load);
+            this.SizeChanged += new System.EventHandler(this.mainBottomPanel_SizeChanged);
             this.ResumeLayout(false);
 
         }

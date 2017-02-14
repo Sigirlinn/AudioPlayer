@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
 namespace Аудиоплеер_2.Forms
 {
     public partial class MainWindow : BaseWindow
-    {
+    {        
+        public float volume = 50;
+        public float wind = 0;
+        private Brush brush = new SolidBrush(Color.DarkSlateGray);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -20,11 +19,6 @@ namespace Аудиоплеер_2.Forms
             label3.TextAlign = ContentAlignment.MiddleRight;
             label2.TextAlign = ContentAlignment.MiddleLeft;
         }
-
-        Brush _g = new SolidBrush(Color.DarkSlateGray);
-
-        public float volume = 50;
-        public float wind = 0;
 
         private void topPanel1_SizeChanged(object sender, EventArgs e)
         {
@@ -57,7 +51,7 @@ namespace Аудиоплеер_2.Forms
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.FillRectangle(_g, 0, panel1.Height - volume, panel1.Width, volume);
+            e.Graphics.FillRectangle(brush, 0, panel1.Height - volume, panel1.Width, volume);
         }
 
         private void panel1_MouseLeave(object sender, EventArgs e)
@@ -67,7 +61,7 @@ namespace Аудиоплеер_2.Forms
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.FillRectangle(_g, 0, 0, wind, this.Height);
+            e.Graphics.FillRectangle(brush, 0, 0, wind, this.Height);
         }
 
         private void panel2_MouseClick(object sender, MouseEventArgs e)

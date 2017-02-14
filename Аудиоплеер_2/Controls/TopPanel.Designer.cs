@@ -40,10 +40,10 @@
             this.DoubleBuffered = true;
             this.Name = "TopPanel";
             this.Size = new System.Drawing.Size(200, 35);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseUp);
-            this.SizeChanged += new System.EventHandler(this.TopPanel_SizeChanged);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topPanel_MouseMove);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topPanel_MouseDown);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.topPanel_MouseUp);
+            this.SizeChanged += new System.EventHandler(this.topPanel_SizeChanged);
             this.ResumeLayout(false);
 
         }

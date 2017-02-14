@@ -63,8 +63,8 @@
             this.Name = "PlayList";
             this.ShowInTaskbar = false;
             this.Text = "PlayList";
-            this.VisibleChanged += new System.EventHandler(this.PlayList_VisibleChanged);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayList_FormClosing);
+            this.VisibleChanged += new System.EventHandler(this.playList_VisibleChanged);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.playList_FormClosing);
             this.Controls.SetChildIndex(this.panel1, 0);
             this.Controls.SetChildIndex(this.topPanel1, 0);
             this.Controls.SetChildIndex(this.bottomPanel1, 0);

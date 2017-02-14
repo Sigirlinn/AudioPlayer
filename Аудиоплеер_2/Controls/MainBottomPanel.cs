@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Аудиоплеер_2.Interface;
 using ButtonBase = Аудиоплеер_2.Classes.ButtonBase;
@@ -25,15 +20,15 @@ namespace Аудиоплеер_2.Controls
         public ButtonBase Open;
         public ButtonBase Cycle;
         public Audio Content = new Audio();
-        public GraphicsFFT display;
+        public GraphicsFFT Display;
 
-        bool _openFile = false;
-        PlayList _PL;
-        Option _Op;
-        MainWindow _parent;
-        System.Timers.Timer timer1;
-        int counter = 0;
-        int counterDemo = 0;
+        private bool openFile = false;
+        private PlayList formPL;
+        private Option formOption;
+        private MainWindow formParent;
+        private System.Timers.Timer timer1;
+        private int counter = 0;
+        private int counterDemo = 0;
 
         public MainBottomPanel()
         {
@@ -88,35 +83,35 @@ namespace Аудиоплеер_2.Controls
                 );
             
 
-            _PL = new PlayList(this);
-            _Op = new Option(this);
-            Play.Click += new EventHandler(Play_Click);
-            LeftButton.Click += new EventHandler(LeftButton_Click);
-            RightButton.Click += new EventHandler(RightButton_Click);
-            Volume.Click += new EventHandler(Volume_Click);
-            PlayList.Click += new EventHandler(PlayList_Click);
-            Option.Click += new EventHandler(Option_Click);
-            Open.Click += new EventHandler(Open_Click);
-            Cycle.Click += new EventHandler(Cycle_Click);
-            Content.Begin += new EventHandler(Content_Begin);
+            formPL = new PlayList(this);
+            formOption = new Option(this);
+            Play.Click += new EventHandler(play_Click);
+            LeftButton.Click += new EventHandler(leftButton_Click);
+            RightButton.Click += new EventHandler(rightButton_Click);
+            Volume.Click += new EventHandler(volume_Click);
+            PlayList.Click += new EventHandler(playList_Click);
+            Option.Click += new EventHandler(option_Click);
+            Open.Click += new EventHandler(open_Click);
+            Cycle.Click += new EventHandler(cycle_Click);
+            Content.Begin += new EventHandler(content_Begin);
             Content.End += new EventHandler(Content_End);
             
         }
 
-        void panel1_MouseClick(object sender, MouseEventArgs e)
+        private void panel1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (_parent.panel1.Visible)
+            if (formParent.panel1.Visible)
             {
-                Content.SetVolume(_parent.volume);
+                Content.SetVolume(formParent.volume);
             }
         }
 
-        void Content_End(object sender, EventArgs e)
+        private void Content_End(object sender, EventArgs e)
         {
             timer1.Stop();
         }
 
-        string textForm(int i)
+        private string textForm(int i)
         {
             int pred = 0;
             if (this.Width > 500) pred = 150;
@@ -132,7 +127,7 @@ namespace Аудиоплеер_2.Controls
             
         }
 
-        void Content_Begin(object sender, EventArgs e)
+        private void content_Begin(object sender, EventArgs e)
         {
             if (timer1 != null) timer1.Dispose();
             timer1 = new System.Timers.Timer(30);
@@ -140,49 +135,49 @@ namespace Аудиоплеер_2.Controls
             int num = Content.GetNumber();
             Invoke(new Action(() =>
             {
-                _parent.label1.Text = textForm(num);
-                _parent.label2.Text = Content.GetShortFileTime()[num];
-                _parent.label3.Text = Content.GetTimeNow();
-                display.Init_OGL();
+                formParent.label1.Text = textForm(num);
+                formParent.label2.Text = Content.GetShortFileTime()[num];
+                formParent.label3.Text = Content.GetTimeNow();
+                Display.Init_OGL();
             }));
-            Content.SetVolume(_parent.volume);
+            Content.SetVolume(formParent.volume);
             
             timer1.Start();
         }
 
-        float windLen()
+        private float windLen()
         {
             double a = Content.LenAll();
             double n = Content.LenNow();
-            double panel = _parent.panel2.Width;
+            double panel = formParent.panel2.Width;
             float rez = (float)(panel / a * n);
             return rez;
         }
 
-        void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Invoke( new Action(() =>{
                 try
                 {
-                    Content.GetFFT(display.fft);
-                    display.drawOGL_Sphere();
-                    _parent.label3.Text = Content.GetTimeNow();
-                    _parent.wind = windLen();
+                    Content.GetFFT(Display.FFT);
+                    Display.DrawOGL_Sphere();
+                    formParent.label3.Text = Content.GetTimeNow();
+                    formParent.wind = windLen();
                     counter++;
                     counterDemo++;
                     if (counter > 25)
                     {
                         counter = 0;
-                        _parent.panel2.Invalidate();
+                        formParent.panel2.Invalidate();
                     }
                     if(counterDemo > 100){
                         counterDemo = 0;
-                        if (_Op.DemoClick)
+                        if (formOption.DemoClick)
                         {
-                            _Op.number++;
-                            if (_Op.number > 6) _Op.number = 0;
-                            _Op.Next();
-                            RightButton_Click(this, new EventArgs());
+                            formOption.Number++;
+                            if (formOption.Number > 6) formOption.Number = 0;
+                            formOption.Next();
+                            rightButton_Click(this, new EventArgs());
                         }
                     }
                 }
@@ -193,24 +188,26 @@ namespace Аудиоплеер_2.Controls
         }));
         }
 
-        void Cycle_Click(object sender, EventArgs e)
+        private void cycle_Click(object sender, EventArgs e)
         {
-            Content.cycle = !Content.cycle;
-            Cycle.clickyou = Content.cycle;
+            Content.Cycle = !Content.Cycle;
+            Cycle.ClickYou = Content.Cycle;
         }
 
-        void Open_Click(object sender, EventArgs e)
+        private void open_Click(object sender, EventArgs e)
         {
+            openFileDialog1.FileName = "";
+            openFileDialog1.Filter = "Аудио файлы (*.mp3)|*.mp3|Все файлы (*.*)|*.*";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                _openFile = true;
-                Content.MemberFile(openFileDialog1.SafeFileNames, openFileDialog1.FileNames);
+                openFile = true;
+                Content.SaveTimeAndNameFile(openFileDialog1.SafeFileNames, openFileDialog1.FileNames);
                 Content.CreateStream(0);
                 int num = Content.GetNumber();
-                _parent.label1.Text = textForm(num);
-                _parent.label2.Text = Content.GetShortFileTime()[num];
-                _parent.label3.Text = Content.GetTimeNow();
-                _PL.InitPlay(Content.GetShortFileTime(), openFileDialog1.SafeFileNames);
+                formParent.label1.Text = textForm(num);
+                formParent.label2.Text = Content.GetShortFileTime()[num];
+                formParent.label3.Text = Content.GetTimeNow();
+                formPL.InitPlay(Content.GetShortFileTime(), openFileDialog1.SafeFileNames);
             }
             openFileDialog1.Dispose();
         }
@@ -219,68 +216,68 @@ namespace Аудиоплеер_2.Controls
         {
             Content.CreateStream(num);
             Content.Play();
-            _PL.SetImageClick(num);
+            formPL.SetImageClick(num);
         }
 
-        void Option_Click(object sender, EventArgs e)
+        private void option_Click(object sender, EventArgs e)
         {
-            _Op.Visible = !_Op.Visible;
-            Option.clickyou = _Op.Visible;
+            formOption.Visible = !formOption.Visible;
+            Option.ClickYou = formOption.Visible;
         }
 
-        void PlayList_Click(object sender, EventArgs e)
+        private void playList_Click(object sender, EventArgs e)
         {
-            _PL.Visible = !_PL.Visible;
-            PlayList.clickyou = _PL.Visible;
+            formPL.Visible = !formPL.Visible;
+            PlayList.ClickYou = formPL.Visible;
         }
 
-        void Volume_Click(object sender, EventArgs e)
+        private void volume_Click(object sender, EventArgs e)
         {
-            _parent.panel1.Visible = !_parent.panel1.Visible;
+            formParent.panel1.Visible = !formParent.panel1.Visible;
         }
 
-        void Play_Click(object sender, EventArgs e)
+        private void play_Click(object sender, EventArgs e)
         {
-            if (_openFile)
+            if (openFile)
             {
                 Content.Play();
                 int num = Content.GetNumber();
-                _PL.SetImageClick(num);
+                formPL.SetImageClick(num);
             }
         }
 
-        void LeftButton_Click(object sender, EventArgs e)
+        private void leftButton_Click(object sender, EventArgs e)
         {
-            if (_openFile)
+            if (openFile)
             {
                 Content.SetNumber(-1);
                 int num = Content.GetNumber();
                 Content.CreateStream(num);
                 Content.Play();
-                _PL.SetImageClick(num);
+                formPL.SetImageClick(num);
             }
         }
 
-        void RightButton_Click(object sender, EventArgs e)
+        private void rightButton_Click(object sender, EventArgs e)
         {
-            if (_openFile)
+            if (openFile)
             {
                 Content.SetNumber(1);
                 int num = Content.GetNumber();
                 Content.CreateStream(num);
                 Content.Play();
-                _PL.SetImageClick(num);
+                formPL.SetImageClick(num);
             }
         }
 
-        private void MainBottomPanel_Load(object sender, EventArgs e)
+        private void mainBottomPanel_Load(object sender, EventArgs e)
         {
             try
             {
-                _parent = ((MainWindow)this.Parent.FindForm());
-                display = new GraphicsFFT(_parent.OGL);
-                _parent.panel1.MouseClick += new MouseEventHandler(panel1_MouseClick);
-                _parent.panel2.MouseClick += new MouseEventHandler(panel2_MouseClick);
+                formParent = ((MainWindow)this.Parent.FindForm());
+                Display = new GraphicsFFT(formParent.OGL);
+                formParent.panel1.MouseClick += new MouseEventHandler(panel1_MouseClick);
+                formParent.panel2.MouseClick += new MouseEventHandler(panel2_MouseClick);
             }
             catch(Exception ef)
             {
@@ -288,25 +285,25 @@ namespace Аудиоплеер_2.Controls
             }
         }
 
-        void panel2_MouseClick(object sender, MouseEventArgs e)
+        private void panel2_MouseClick(object sender, MouseEventArgs e)
         {
-            double next = (double)_parent.wind / (double)_parent.panel2.Width * Content.LenAll();
+            double next = (double)formParent.wind / (double)formParent.panel2.Width * Content.LenAll();
             Content.SetLen(next);
         }
 
-        private void MainBottomPanel_SizeChanged(object sender, EventArgs e)
+        private void mainBottomPanel_SizeChanged(object sender, EventArgs e)
         {
-            if (Content != null && display != null)
+            if (Content != null && Display != null)
             {
-                Content.GetFFT(display.fft);
+                Content.GetFFT(Display.FFT);
                 int num = Content.GetNumber();
-                _parent.label1.Text = textForm(num);
-                _parent.label2.Text = Content.GetShortFileTime()[num];
-                _parent.label3.Text = Content.GetTimeNow();
-                _parent.wind = windLen();
-                _parent.panel2.Invalidate();
-                display.Init_OGL();
-                display.drawOGL_Sphere();
+                formParent.label1.Text = textForm(num);
+                formParent.label2.Text = Content.GetShortFileTime()[num];
+                formParent.label3.Text = Content.GetTimeNow();
+                formParent.wind = windLen();
+                formParent.panel2.Invalidate();
+                Display.Init_OGL();
+                Display.DrawOGL_Sphere();
             }
         }
     }
